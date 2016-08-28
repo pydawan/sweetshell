@@ -1,0 +1,24 @@
+group 'org.oreto'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main.groovy.srcDir 'src'
+    test.groovy.srcDir 'test'
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.7'
+    compile 'com.aestasit.infrastructure.sshoogr:sshoogr:0.9.25'
+    compile 'org.yaml:snakeyaml:1.16'
+    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4-rc-2'
+    //testCompile group: 'junit', name: 'junit', version: '4.11'
+}
