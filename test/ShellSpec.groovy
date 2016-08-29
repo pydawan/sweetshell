@@ -1,25 +1,9 @@
-
-import com.aestasit.infrastructure.ssh.SshOptions
-import org.oreto.sweetshell.ShellFactory
 import org.oreto.sweetshell.Shell
-import org.yaml.snakeyaml.Yaml
-import spock.lang.*
-class ShellSpec extends Specification {
-    SshOptions sshOptions
-    Shell shell
-    def testDir = ['tmp', 'test']
-    def vertx = ['home', 'vagrant', '.sdkman', 'candidates', 'vertx', 'current', 'bin']
-    def conf
+import org.oreto.sweetshell.ShellFactory
 
-    def setup() {
-        Yaml yaml = new Yaml()
-        def file = new File('host.yaml')
-        conf = (yaml.load(file.newInputStream()) as Map).get('vagrant') as Map
-        sshOptions = new SshOptions(defaultHost: conf.get('host'),
-                defaultUser: conf.get('user'),
-                defaultKeyFile: new File(conf.get("keyfile") as String))
-        shell = ShellFactory.create(sshOptions)
-    }
+class ShellSpec extends BaseSpec {
+
+    Shell shell = ShellFactory.create(sshOptions)
 
     def "run app in background"() {
         when:
@@ -60,6 +44,12 @@ class ShellSpec extends Specification {
         expect:
         shell.rm(testDir + 'test.txt').ok()
         shell.rm(testDir).ok()
+    }
+
+    def "redirect"() {
+        expect:
+        shell.ls().redirect('test.out').commandString() == 'ls > test.out'
+        shell.ls().redirect('test.out', true).commandString() == 'ls > test.out && ls >> test.out'
     }
 
 //    def "upload file"() {

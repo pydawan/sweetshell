@@ -10,8 +10,7 @@ class ShellFactory {
     }
 
     static Shell create(SshOptions sshOptions) {
-        defaultSshOptions(sshOptions)
-        switch (Bash.detectShell(sshOptions)) {
+        switch (CommandScript.detectShell(sshOptions)) {
             case Shells.BASH: new Bash(sshOptions); break;
             default: new Bash(sshOptions)
         }

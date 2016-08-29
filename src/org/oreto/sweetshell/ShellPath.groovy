@@ -2,6 +2,9 @@ package org.oreto.sweetshell
 
 trait ShellPath {
 
+    String homeDirName = '$HOME'
+    String parentDirName = '..'
+    String currentDirName = '.'
     String separator = '/'
     String localSeparator = File.separator
 
@@ -19,6 +22,13 @@ trait ShellPath {
     }
     def String relativePath(String... names) {
         relativePath(names.collect())
+    }
+
+    def String fromHome(Collection names, String... dir) {
+        relativePath([homeDirName] + names, dir)
+    }
+    def String fromHome(String... names) {
+        relativePath([homeDirName], names)
     }
 
     def String localPath(Collection names, String... dir) {
