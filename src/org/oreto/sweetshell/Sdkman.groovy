@@ -4,11 +4,13 @@ import com.aestasit.infrastructure.ssh.SshOptions
 import com.aestasit.infrastructure.ssh.dsl.SshDslEngine
 
 
-class Sdkman implements Shell {
+class Sdkman implements Cli<Sdkman> {
 
-    static String sdkmanName = 'sdk'
+    String executable = 'sdk'
+    SshOptions sshOptions
 
     Sdkman(SshOptions sshOptions) {
+        this.sshOptions = sshOptions
         this.engine = new SshDslEngine(sshOptions)
         homeDirName = fromHome('.sdkman')
     }
@@ -17,12 +19,9 @@ class Sdkman implements Shell {
         if(commands.isEmpty()) source(fromHome('bin', 'sdkman-init.sh'))
     }
 
-    def Sdkman cli(cmd, Object... params) {
+    def Sdkman cmd(cmd, Object... params) {
         sourceSdkman()
-        prefixStack.push(sdkmanName)
-        c(cmd, params)
-        prefixStack.pop()
-        this
+        Cli.super.cmd(cmd, params)
     }
 
     def Sdkman selfInstall() {
@@ -31,22 +30,32 @@ class Sdkman implements Shell {
     }
 
     def Sdkman selfUpdate() {
-        cli('selfupdate')
+        cmd('selfupdate')
         this
     }
 
     def String version() {
-        cli('version').text()
+        cmd('version').text()
     }
 
     def Sdkman install(String candidate) {
         sourceSdkman()
         yes()
-        cli('install', candidate)
+        cmd('install', candidate)
+    }
+
+    def boolean isInstalled(String candidate) {
+        cmd('default', candidate).text().contains('is not installed')
+    }
+
+    def Sdkman use(String candidate) {
+        sourceSdkman()
+        yes()
+        cmd('use', candidate)
     }
 
     def boolean upToDate(String candidate) {
-        cli('outdated', candidate).text().contains('up-to-date')
+        cmd('outdated', candidate).text().contains('up-to-date')
     }
 
     def boolean outdated(String candidate) {
@@ -54,12 +63,21 @@ class Sdkman implements Shell {
     }
 
     def String outdated() {
-        cli('outdated').text()
+        cmd('outdated').text()
     }
 
-    def Sdkman use(String candidate) {
-        sourceSdkman()
-        yes()
-        cli('use', candidate)
+    def Cli getCliFor(String candidate, String version = 'current') {
+        switch (candidate) {
+            case Activator.exe: getActivatorCli(version); break;
+            default: this; break;
+        }
+    }
+
+    def Activator getActivatorCli(String version = 'current') {
+        new Activator(sshOptions,  candidateHome(Activator.exe, version))
+    }
+
+    def String candidateHome(String candidate, String version = 'current') {
+        fromHome('candidates', candidate, version)
     }
 }

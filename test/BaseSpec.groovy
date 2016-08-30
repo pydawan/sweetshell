@@ -1,4 +1,5 @@
 import com.aestasit.infrastructure.ssh.SshOptions
+import org.oreto.sweetshell.Sdkman
 import org.oreto.sweetshell.ShellFactory
 import org.yaml.snakeyaml.Yaml
 import spock.lang.Shared
@@ -7,6 +8,7 @@ import spock.lang.Specification
 class BaseSpec extends Specification {
     @Shared SshOptions sshOptions
     @Shared def conf
+    @Shared Sdkman sdkman
 
     def testDir = ['tmp', 'test']
     def vertx = ['home', 'vagrant', '.sdkman', 'candidates', 'vertx', 'current', 'bin']
@@ -19,5 +21,6 @@ class BaseSpec extends Specification {
                 defaultUser: conf.get('user'),
                 defaultKeyFile: new File(conf.get("keyfile") as String))
         ShellFactory.defaultSshOptions(sshOptions)
+        sdkman = new Sdkman(sshOptions)
     }
 }

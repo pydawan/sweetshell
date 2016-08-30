@@ -1,14 +1,9 @@
-import org.oreto.sweetshell.Sdkman
-import spock.lang.Shared
 
 class SdkmanSpec extends BaseSpec {
 
-    @Shared Sdkman sdkman
     String groovyCandidate = 'groovy'
 
-    def setupSpec() {
-        sdkman = new Sdkman(sshOptions)
-    }
+    def setupSpec() {}
 
     def "install sdkman"() {
         when:

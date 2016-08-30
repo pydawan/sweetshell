@@ -7,6 +7,7 @@ class ShellFactory {
         sshOptions.trustUnknownHosts = true
         sshOptions.reuseConnection = true
         sshOptions.defaultPort = 2222
+        sshOptions.execOptions.failOnError = false
     }
 
     static Shell create(SshOptions sshOptions) {
