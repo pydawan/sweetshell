@@ -21,3 +21,12 @@ sudo apt-get install oracle-java8-installer
 sudo apt-get install unzip
 sudo apt-get install curl
 ```
+
+### conf
+* create host.yaml in the project root with contents:
+```
+vagrant:
+    host: '127.0.0.1'
+    user: 'vagrant'
+    keyfile: "path-to-key-file"
+```

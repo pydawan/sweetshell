@@ -13,12 +13,14 @@ trait Shell implements ShellCommand<Shell> {
     String sudoCmd = 'sudo'
     String backgroundCmd = 'setsid'
     String mvCmd = 'mv'
+    String copyCmd = 'cp'
     String showCmd = 'cat'
     String makeCmd = 'touch'
     String makeDirCmd = 'mkdir'
     String removeCmd = 'rm'
     String httpCmd = 'curl'
     String sourceCmd = 'source'
+    String testCmd = 'test'
 
     def upload(from, to) {
         engine.remoteSession {
@@ -42,12 +44,28 @@ trait Shell implements ShellCommand<Shell> {
         c(showCmd, objToPath(file))
     }
 
+    def Shell fileExists(file) {
+        c(testCmd, '-f', file)
+    }
+
+    def Shell dirExists(file) {
+        c(testCmd, '-d', file)
+    }
+
     def Shell mk(file) {
         c(makeCmd, objToPath(file))
     }
 
     def Shell mkdir(dir) {
         c(makeDirCmd, objToPath(dir))
+    }
+
+    def Shell mkIf(file) {
+        not().fileExists(file).mk(file)
+    }
+
+    def Shell mkdirIf(dir) {
+        not().dirExists(dir).mkdir(dir)
     }
 
     def Shell rm(Object... dir) {
@@ -61,13 +79,25 @@ trait Shell implements ShellCommand<Shell> {
         c(mvCmd, params)
     }
 
+    def Shell cp(source, dest) {
+        c(copyCmd, objToPath(source), objToPath(dest))
+    }
+
+    def Shell cpIf(source, dest) {
+        not().fileExists(dest).c(copyCmd, objToPath(source), objToPath(dest))
+    }
+
+    def Shell not() {
+        addOperator(notOp)
+    }
+
     def Shell pipe() {
         addOperator(pipeOp)
     }
 
     def Shell redirect(file, boolean append = false) {
         String op = append ? appendOp : redirectOp
-        CommandScript command = commands?.last()
+        CommandScript command = this.commandScripts?.last()
         if(command instanceof Command) {
             command.script += " $op ${objToPath(file)}"
         }
@@ -75,7 +105,7 @@ trait Shell implements ShellCommand<Shell> {
     }
 
     def Shell redirectErr(file) {
-        CommandScript command = commands?.last()
+        CommandScript command = this.commandScripts?.last()
         if(command instanceof Command) {
             command.script += " $redirectErrOp ${objToPath(file)}"
         }
@@ -150,6 +180,13 @@ trait Shell implements ShellCommand<Shell> {
         addOperator(groupOpenOp)
         closure(this)
         addOperator(groupCloseOp)
+        this
+    }
+
+    def test = { Closure closure ->
+        addOperator(testGroupOpenOp)
+        closure(this)
+        addOperator(testGroupCloseOp)
         this
     }
 

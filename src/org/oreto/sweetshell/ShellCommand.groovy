@@ -15,7 +15,7 @@ trait ShellCommand<T extends ShellCommand<T>> implements ShellPath {
     Stack<String> opStack = new Stack<String>()
     Stack<String> prefixStack = new Stack<String>()
     String runPrefix = ''
-    ArrayList<CommandScript> commands = [].withDefault { [:] }
+    ArrayList<CommandScript> commandScripts = [].withDefault { [:] }
     StringBuffer commandBuilder = new StringBuffer()
     SshDslEngine engine
 
@@ -24,6 +24,9 @@ trait ShellCommand<T extends ShellCommand<T>> implements ShellPath {
     String combineOpenOp = '{'
     String combineCloseOp = '}'
     String combineOp = ';'
+    String notOp = '!'
+    String testGroupOpenOp = '[['
+    String testGroupCloseOp = ']]'
 
     def CommandOutput runCommand(String cmd, boolean show = true) {
         CommandOutput commandOutput = null
@@ -38,7 +41,7 @@ trait ShellCommand<T extends ShellCommand<T>> implements ShellPath {
 
     def CommandOutput run(boolean show = true) {
         def commandOutput = runCommand(commandString(), show)
-        commands.clear()
+        commandScripts.clear()
         commandOutput
     }
 
@@ -51,7 +54,7 @@ trait ShellCommand<T extends ShellCommand<T>> implements ShellPath {
         def op = opStack.isEmpty() ? defaultOp : opStack.peek()
         def command = new Command(script: cmd)
         addOperator(op)
-        commands.add(command)
+        commandScripts.add(command)
         this as T
     }
 
@@ -69,11 +72,11 @@ trait ShellCommand<T extends ShellCommand<T>> implements ShellPath {
     }
 
     def String commandString() {
-        commands.eachWithIndex { c, i ->
+        commandScripts.eachWithIndex { c, i ->
             def s = c.script
             if(c instanceof Operator) {
-                if(i == 0 || (i > 0 && commands[i - 1] instanceof Operator)) s = "$s "
-                else if(i > 0 && commands[i - 1] instanceof Command) s = " $s "
+                if(i == 0 || (i > 0 && commandScripts[i - 1] instanceof Operator)) s = "$s "
+                else if(i > 0 && commandScripts[i - 1] instanceof Command) s = " $s "
             }
             commandBuilder.append(s)
         }
@@ -95,15 +98,17 @@ trait ShellCommand<T extends ShellCommand<T>> implements ShellPath {
     }
 
     def T addOperator(String op) {
-        def lastCommand = commands.isEmpty() ? null : commands.last()
-        if( (op == groupOpenOp || op == combineOpenOp)
-                && (lastCommand == null || lastCommand instanceof Operator)
-                || lastCommand instanceof Command
-                || lastCommand?.script == groupCloseOp
-                || lastCommand?.script == combineCloseOp
-                || lastCommand?.script == combineOp && op != andOp && op != orOp) {
-            def command = new Operator(script: op)
-            commands.add(command)
+        if(op == notOp) addOperator(opStack.isEmpty() ? defaultOp : opStack.peek())
+        def lastScript = commandScripts.isEmpty() ? null : commandScripts.last()
+        if( (op == groupOpenOp || op == combineOpenOp || op == testGroupOpenOp || op == notOp)
+                && (lastScript == null || lastScript instanceof Operator)
+                || lastScript instanceof Command
+                || lastScript?.script == groupCloseOp
+                || lastScript?.script == testGroupCloseOp
+                || lastScript?.script == combineCloseOp
+                || lastScript?.script == combineOp && op != andOp && op != orOp) {
+            def operator = new Operator(script: op)
+            commandScripts.add(operator)
         }
         this as T
     }

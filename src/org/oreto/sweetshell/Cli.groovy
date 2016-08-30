@@ -19,4 +19,8 @@ trait Cli<T extends Cli<T>> implements Shell {
         prefixStack.pop()
         this as T
     }
+
+    Shell getShell() {
+        this as Shell
+    }
 }

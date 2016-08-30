@@ -16,7 +16,7 @@ class Sdkman implements Cli<Sdkman> {
     }
 
     protected sourceSdkman() {
-        if(commands.isEmpty()) source(fromHome('bin', 'sdkman-init.sh'))
+        if(this.commandScripts.isEmpty()) source(fromHome('bin', 'sdkman-init.sh'))
     }
 
     def Sdkman cmd(cmd, Object... params) {
@@ -75,6 +75,10 @@ class Sdkman implements Cli<Sdkman> {
 
     def Activator getActivatorCli(String version = 'current') {
         new Activator(sshOptions,  candidateHome(Activator.exe, version))
+    }
+
+    def Vertx getVertxCli(String version = 'current') {
+        new Vertx(sshOptions,  candidateHome(Vertx.exe, version))
     }
 
     def String candidateHome(String candidate, String version = 'current') {

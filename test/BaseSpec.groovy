@@ -11,7 +11,6 @@ class BaseSpec extends Specification {
     @Shared Sdkman sdkman
 
     def testDir = ['tmp', 'test']
-    def vertx = ['home', 'vagrant', '.sdkman', 'candidates', 'vertx', 'current', 'bin']
 
     def setupSpec() {
         Yaml yaml = new Yaml()
