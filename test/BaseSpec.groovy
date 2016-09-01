@@ -19,14 +19,18 @@ class BaseSpec extends Specification {
         Yaml yaml = new Yaml()
         def file = new File('host.yaml')
         def load = yaml.load(file.newInputStream()) as Map
+
         vagrantConf = load.get('vagrant') as Map
         svnConf = load.get('svn') as Map
+
         sshOptions = new SshOptions(defaultHost: vagrantConf.get('host'),
                 defaultUser: vagrantConf.get('user'),
                 defaultKeyFile: new File(vagrantConf.get("keyfile") as String))
+
         svnOptions = new SubversionOptions(repoUrl: svnConf.get('repo'),
                 username: svnConf.get('username'),
                 password: svnConf.get('password'))
+
         ShellFactory.defaultSshOptions(sshOptions, [svnConf.get('password')])
         sdkman = new Sdkman(sshOptions)
     }

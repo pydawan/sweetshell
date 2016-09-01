@@ -39,9 +39,13 @@ trait ShellCommand<T extends ShellCommand<T>> implements ShellPath {
         commandOutput
     }
 
+    def clear() {
+        commandScripts?.clear()
+    }
+
     def CommandOutput run(boolean show = true) {
         def commandOutput = runCommand(commandString(), show)
-        commandScripts.clear()
+        clear()
         commandOutput
     }
 

@@ -13,6 +13,7 @@ trait Shell implements ShellCommand<Shell> {
     String sudoCmd = 'sudo'
     String backgroundCmd = 'setsid'
     String mvCmd = 'mv'
+    String renameCmd = 'mv'
     String copyCmd = 'cp'
     String showCmd = 'cat'
     String makeCmd = 'touch'
@@ -22,6 +23,7 @@ trait Shell implements ShellCommand<Shell> {
     String sourceCmd = 'source'
     String testCmd = 'test'
     String echoCmd = 'echo'
+    String unzipCmd = 'tar'
 
     def upload(from, to) {
         engine.remoteSession {
@@ -30,7 +32,9 @@ trait Shell implements ShellCommand<Shell> {
     }
 
     def Shell cd(dir) {
-        c(cdCmd, objToPath(dir))
+        if(dir instanceof String) dir = path(dir)
+        else dir = objToPath(dir)
+        c(cdCmd, dir)
     }
 
     def Shell cd() {
@@ -45,16 +49,20 @@ trait Shell implements ShellCommand<Shell> {
         c(showCmd, objToPath(file))
     }
 
-    def Shell echo(s) {
+    def Shell echo(String s) {
         c(echoCmd, s)
     }
 
+    def Shell test(String flag, file) {
+        c(testCmd, flag, file)
+    }
+
     def Shell testFileExists(file) {
-        c(testCmd, '-e', file)
+        test('-e', file)
     }
 
     def Shell testDirExists(file) {
-        c(testCmd, '-d', file)
+        test('-d', file)
     }
 
     def Shell mk(file) {
@@ -82,6 +90,10 @@ trait Shell implements ShellCommand<Shell> {
         params.add(objToPath(source))
         params.add(objToPath(dest))
         c(mvCmd, params)
+    }
+
+    def Shell rename(source, dest) {
+        c(renameCmd, source, dest)
     }
 
     def Shell cp(source, dest) {
@@ -132,6 +144,27 @@ trait Shell implements ShellCommand<Shell> {
 
     def Shell source(file) {
         c(sourceCmd, objToPath(file))
+    }
+
+    def Shell workingDir() {
+        c(workingDirCmd)
+    }
+
+    def Shell ls() {
+        c(listCmd)
+    }
+
+    def Shell ls(dir) {
+        c(listCmd, objToPath(dir))
+    }
+
+    def Shell yes() {
+        c('yes').pipe()
+    }
+
+    def Shell unzip(file, dest = '', String flags = '-zxvf') {
+        if(dest) c(unzipCmd, '-C', dest, flags, file)
+        else c(unzipCmd, flags, file)
     }
 
     def sudo = { Closure closure ->
@@ -193,21 +226,5 @@ trait Shell implements ShellCommand<Shell> {
         closure(this)
         addOperator(testGroupCloseOp)
         this
-    }
-
-    def Shell workingDir() {
-        c(workingDirCmd)
-    }
-
-    def Shell ls() {
-        c(listCmd)
-    }
-
-    def Shell ls(dir) {
-        c(listCmd, objToPath(dir))
-    }
-
-    def Shell yes() {
-        c('yes').pipe()
     }
 }

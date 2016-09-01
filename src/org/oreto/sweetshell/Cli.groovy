@@ -18,7 +18,7 @@ trait Cli<T extends Cli<T>> implements Shell {
         else executable
     }
 
-    T cmd(cmd, Object... params) {
+    T cmd(cmd, Object[] params) {
         prefixStack.push(executable)
         c(cmd, params)
         prefixStack.pop()

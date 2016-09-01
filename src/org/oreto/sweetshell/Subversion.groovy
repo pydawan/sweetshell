@@ -11,15 +11,20 @@ class Subversion implements Cli<Subversion> {
     String tagUri = '/tag'
     String branchUri = '/branch'
     SubversionOptions options
+    def List credentials
+
+    def Object[] withCredentials(List params) {
+        (credentials + params)
+    }
 
     Subversion(SshOptions sshOptions, SubversionOptions options, home = '') {
         this.options = options
+        credentials = ["--username=${options.username}", "--password=${options.password}"]
         initCli(sshOptions, objToPath(home))
     }
 
     Subversion checkout(path = '', RepoType type = RepoType.TRUNK, String rev = HEAD) {
-        cmd('checkout', "--username=${options.username}", "--password=${options.password}", '-r',
-                rev, urlFor(options.repoUrl, type), path)
+        cmd('checkout', withCredentials(['-r', rev, urlFor(options.repoUrl, type), path]))
     }
 
     String urlFor(String url, RepoType type) {
