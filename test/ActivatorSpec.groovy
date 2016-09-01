@@ -33,6 +33,6 @@ class ActivatorSpec extends BaseSpec {
         activator.appDirectory = testAppDir
 
         then:
-        activator.test().testsPass()
+        activator.testsPass()
     }
 }

@@ -21,13 +21,13 @@ class Activator implements Cli<Activator> {
 
     @Override
     Activator cmd(cmd, Object[] params) {
+        if(appDirectory) prefixStack.push("$cdCmd ${getAppDirectory()} $andOp")
         prefixStack.push(executable)
         if(javaHome) prefixStack.push(javaHome)
-        if(appDirectory) prefixStack.push("$cdCmd ${getAppDirectory()} $andOp")
         c(cmd, params)
+        if(appDirectory) prefixStack.pop()
         prefixStack.pop()
         if(javaHome) prefixStack.pop()
-        if(appDirectory) prefixStack.pop()
         this
     }
 
