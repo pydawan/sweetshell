@@ -20,6 +20,7 @@ sudo apt-get install oracle-java8-installer
 ```
 sudo apt-get install unzip
 sudo apt-get install curl
+sudo apt-get install subversion
 ```
 
 ### conf

@@ -7,8 +7,8 @@ class Activator implements Cli<Activator> {
     static String exe = 'activator'
     String executable = exe
 
-    Activator(SshOptions sshOptions, String home) {
-        initCli(sshOptions, home)
+    Activator(SshOptions sshOptions, home) {
+        initCli(sshOptions, objToPath(home))
     }
 
     String listTemplates() {

@@ -28,7 +28,7 @@ vertx.createHttpServer().requestHandler({ req ->
         }.run()
 
         then:
-        vertx.dirExists(appsDir)
+        vertx.testDirExists(appsDir)
     }
 
     def "copy source to apps"() {
@@ -38,7 +38,7 @@ vertx.createHttpServer().requestHandler({ req ->
         }.run()
 
         then:
-        vertx.fileExists(appsDir + appFile)
+        vertx.testFileExists(appsDir + appFile)
     }
 
     def "install and list apps"() {

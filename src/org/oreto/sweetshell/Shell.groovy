@@ -21,6 +21,7 @@ trait Shell implements ShellCommand<Shell> {
     String httpCmd = 'curl'
     String sourceCmd = 'source'
     String testCmd = 'test'
+    String echoCmd = 'echo'
 
     def upload(from, to) {
         engine.remoteSession {
@@ -44,11 +45,15 @@ trait Shell implements ShellCommand<Shell> {
         c(showCmd, objToPath(file))
     }
 
-    def Shell fileExists(file) {
-        c(testCmd, '-f', file)
+    def Shell echo(s) {
+        c(echoCmd, s)
     }
 
-    def Shell dirExists(file) {
+    def Shell testFileExists(file) {
+        c(testCmd, '-e', file)
+    }
+
+    def Shell testDirExists(file) {
         c(testCmd, '-d', file)
     }
 
@@ -61,11 +66,11 @@ trait Shell implements ShellCommand<Shell> {
     }
 
     def Shell mkIf(file) {
-        not().fileExists(file).mk(file)
+        not().testFileExists(file).mk(file)
     }
 
     def Shell mkdirIf(dir) {
-        not().dirExists(dir).mkdir(dir)
+        not().testDirExists(dir).mkdir(dir)
     }
 
     def Shell rm(Object... dir) {
@@ -84,7 +89,7 @@ trait Shell implements ShellCommand<Shell> {
     }
 
     def Shell cpIf(source, dest) {
-        not().fileExists(dest).c(copyCmd, objToPath(source), objToPath(dest))
+        not().testFileExists(dest).c(copyCmd, objToPath(source), objToPath(dest))
     }
 
     def Shell not() {

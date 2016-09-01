@@ -9,10 +9,10 @@ class Sdkman implements Cli<Sdkman> {
     String executable = 'sdk'
     SshOptions sshOptions
 
-    Sdkman(SshOptions sshOptions) {
+    Sdkman(SshOptions sshOptions, home = '') {
         this.sshOptions = sshOptions
         this.engine = new SshDslEngine(sshOptions)
-        homeDirName = fromHome('.sdkman')
+        homeDirName = home ? objToPath(home) : fromHome('.sdkman')
     }
 
     protected sourceSdkman() {

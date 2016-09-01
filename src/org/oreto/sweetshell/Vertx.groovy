@@ -7,8 +7,8 @@ class Vertx implements Cli<Vertx> {
     static String exe = 'vertx'
     String executable = exe
 
-    Vertx(SshOptions sshOptions, String home) {
-        initCli(sshOptions, home)
+    Vertx(SshOptions sshOptions, home) {
+        initCli(sshOptions, objToPath(home))
     }
 
     String list() {

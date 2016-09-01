@@ -7,10 +7,15 @@ trait Cli<T extends Cli<T>> implements Shell {
     abstract String getExecutable()
     abstract void setExecutable(String executable)
 
-    void initCli(SshOptions sshOptions, String home) {
+    void initCli(SshOptions sshOptions, home) {
         this.engine = new SshDslEngine(sshOptions)
         homeDirName = home
-        executable = relativePath(home, 'bin', executable)
+        executable = buildExePath(home)
+    }
+
+    String buildExePath(home) {
+        if(home) relativePath(objToPath(home), 'bin', executable)
+        else executable
     }
 
     T cmd(cmd, Object... params) {
