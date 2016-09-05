@@ -6,7 +6,6 @@ class ShellFactory {
     static defaultSshOptions(SshOptions sshOptions, List secrets = []) {
         sshOptions.trustUnknownHosts = true
         sshOptions.reuseConnection = true
-        sshOptions.defaultPort = 2222
         sshOptions.execOptions.failOnError = false
         sshOptions.execOptions.secrets = secrets
     }

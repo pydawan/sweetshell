@@ -69,6 +69,7 @@ class Sdkman implements Cli<Sdkman> {
     def Cli getCliFor(String candidate, String version = 'current') {
         switch (candidate) {
             case Activator.exe: getActivatorCli(version); break;
+            case Vertx.exe: getVertxCli(version); break;
             default: this; break;
         }
     }

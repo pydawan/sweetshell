@@ -25,6 +25,8 @@ trait Shell implements ShellCommand<Shell> {
     String echoCmd = 'echo'
     String unzipCmd = 'tar'
 
+    boolean enableSudo = true
+
     def upload(from, to) {
         engine.remoteSession {
             scp objToPath(from), objToPath(to)
@@ -158,8 +160,9 @@ trait Shell implements ShellCommand<Shell> {
         c(listCmd, objToPath(dir))
     }
 
-    def Shell yes() {
-        c('yes').pipe()
+    def Shell yes(String text = '') {
+        if(text) c('yes', text).pipe()
+        else c('yes').pipe()
     }
 
     def Shell unzip(file, dest = '', String flags = '-zxvf') {
@@ -168,9 +171,9 @@ trait Shell implements ShellCommand<Shell> {
     }
 
     def sudo = { Closure closure ->
-        prefixStack.push(sudoCmd)
+        if(enableSudo) prefixStack.push(sudoCmd)
         closure(this)
-        prefixStack.pop()
+        if(enableSudo) prefixStack.pop()
         this
     }
 

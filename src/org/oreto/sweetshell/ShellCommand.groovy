@@ -17,6 +17,7 @@ trait ShellCommand<T extends ShellCommand<T>> implements ShellPath {
     String runPrefix = ''
     ArrayList<CommandScript> commandScripts = [].withDefault { [:] }
     StringBuffer commandBuilder = new StringBuffer()
+    SshOptions sshOptions
     SshDslEngine engine
 
     String groupOpenOp = '('

@@ -24,6 +24,7 @@ class BaseSpec extends Specification {
         svnConf = load.get('svn') as Map
 
         sshOptions = new SshOptions(defaultHost: vagrantConf.get('host'),
+                defaultPort: vagrantConf.get('port'),
                 defaultUser: vagrantConf.get('user'),
                 defaultKeyFile: new File(vagrantConf.get("keyfile") as String))
 
